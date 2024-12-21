@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="container" id="login-page" >
+    
+        <h2>Login</h2>
+        <form id="login-form" method="post" action="{% url 'login_page' %}">
+            {% if messages %}
+            {% for message in messages %}
+                <h2 style="color: red;">{{message}}</h2>
+            {% endfor %}
+        {% endif %}
+            {% csrf_token %}
+            <input type="text" id="login-username" placeholder="Username" required name = "uname">
+            <input type="password" id="login-password" placeholder="Password" required name = "pass">
+            <button type="submit">Login</button>
+            <p>Don't hav"e an account? 
+                <a href="{% url "register_page" %}">Register</a></p>
+        </form>
+    </div>
+</body>
+</html>

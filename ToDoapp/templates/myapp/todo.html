@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .container {
+            background: #fff;
+            padding: 20px;
+            max-width: 600px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        button[name="update"] {
+            background-color: #4CAF50; /* Green */
+        }
+        button[name="delete"] {
+            background-color: #f44336; /* Red */
+        }
+        button[name="complete"] {
+            background-color: #FF9800; /* Orange */
+        }
+        .completed {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ user.username }} id:{{user.id}}</h2>
+
+        <!-- Add New Task -->
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="task" placeholder="Add a new task..." required>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <!-- Table for Tasks -->
+        <h3>Your Tasks</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Task Name</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tasks in task %}
+                <tr>
+                    <td>{{ forloop.counter }}</td> <!-- Serial Number -->
+                    <td class="{% if tasks.status %}completed{% endif %}">{{ tasks.todo_name }}</td>
+
+                    <!-- Mark Task as Completed -->
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="task_id" value="{{ tasks.id }}">
+                            <button type="submit" name="complete">
+                                {% if tasks.status %}<span style="color: Green;">Completed{% else %}Unompleted{% endif %}
+                            </button>
+                        </form>
+                    </td>
+
+                    <!-- Update Task -->
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="task_id" value="{{ tasks.id }}">
+                            <input type="text" name="task" placeholder="Update task..." required>
+                            <button type="submit" name="update">Update</button>
+                        </form>
+                    </td>
+
+                    <!-- Delete Task -->
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="task_id" value="{{ tasks.id }}">
+                            <button type="submit" name="delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No tasks found!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Logout -->
+        <form method="post" action="{% url 'logout' %}" style="margin-top: 20px;">
+            {% csrf_token %}
+            <button type="submit" style="background-color: #333;">Logout</button>
+        </form>
+    </div>
+</body>
+</html>
